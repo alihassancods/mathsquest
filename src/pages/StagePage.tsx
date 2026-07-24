@@ -5,7 +5,6 @@ import { generateQuestion, generateOptions } from '../utils/questionGenerator'
 import { useProgress } from '../hooks/useProgress'
 import { Question } from '../types'
 import TopBar from '../components/TopBar'
-import BottomNav from '../components/BottomNav'
 import ProgressBar from '../components/ProgressBar'
 import QuestionCard from '../components/QuestionCard'
 import AnswerGrid from '../components/AnswerGrid'
@@ -192,8 +191,6 @@ export default function StagePage() {
           </div>
         )}
       </main>
-
-      <BottomNav />
     </div>
   )
 }

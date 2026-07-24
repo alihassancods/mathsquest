@@ -129,12 +129,7 @@ img {
   display: block;
 }
 
-/* ---- Material Symbols ---- */
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined', sans-serif;
-  font-display: swap;
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
+/* ---- Material Symbols removed — all icons replaced with emoji for <10ms load */
 
 /* ---- Animations ---- */
 @keyframes float {
@@ -185,7 +180,7 @@ img {
   color: var(--primary);
 }
 
-.app-loading .material-symbols-outlined {
+.app-loading .app-loading__icon {
   font-size: 3rem;
 }
 
@@ -284,66 +279,13 @@ img {
   letter-spacing: 0.03em;
 }
 
-/* ============================================
-   Bottom Navigation
-   ============================================ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  z-index: 50;
-  display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-  padding: var(--sm) var(--xs);
-  background: var(--surface-container-low);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-  border-top: 4px solid var(--primary-fixed);
-}
-
-.bottom-nav__tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  border-radius: var(--radius);
-  transition: all 0.2s ease;
-}
-
-.bottom-nav__tab:hover {
-  background: var(--surface-variant);
-}
-
-.bottom-nav__tab:active {
-  transform: scale(0.95);
-}
-
-.bottom-nav__tab--active {
-  background: var(--secondary-container);
-  color: var(--on-secondary-container);
-  transform: translateY(-8px);
-  border-bottom: 4px solid var(--on-secondary-fixed-variant);
-}
-
-.bottom-nav__tab .material-symbols-outlined {
-  font-size: 1.5rem;
-}
-
-.bottom-nav__label {
-  font-weight: 900;
-  font-size: 16px;
-  line-height: 20px;
-  letter-spacing: 0.05em;
-}
+/* ---- Bottom Navigation ---- removed — no learn/shop/friends pages exist */
 
 /* ============================================
    Map Page
    ============================================ */
 .map-page {
   min-height: 100vh;
-  padding-bottom: 80px;
 }
 
 .map-container {
@@ -353,16 +295,6 @@ img {
   min-height: 120vh;
   padding-top: 100px;
   padding-bottom: var(--xl);
-}
-
-.map-cloud {
-  position: absolute;
-  width: 120px;
-  height: 60px;
-  background: white;
-  border-radius: var(--radius-full);
-  box-shadow: var(--shadow-sm);
-  opacity: 0.6;
 }
 
 .map-cloud {
@@ -626,9 +558,9 @@ img {
   cursor: not-allowed;
 }
 
-.stage-node--locked .material-symbols-outlined {
+.stage-node--locked .stage-node__lock-emoji {
   font-size: 2rem;
-  color: var(--on-surface-variant);
+  line-height: 1;
 }
 
 .stage-node__number {
@@ -671,10 +603,6 @@ img {
   justify-content: center;
 }
 
-.stage-node__avatar-icon .material-symbols-outlined {
-  font-size: 2rem;
-  color: var(--on-secondary-fixed-variant);
-}
 
 .stage-node__you-badge {
   background: var(--primary);
@@ -719,21 +647,11 @@ img {
   border: 2px solid white;
 }
 
-.stage-node__check .material-symbols-outlined {
-  color: white;
-  font-size: 1.25rem;
-}
-
 /* ---- Node: Sparkle (current) ---- */
 .stage-node__sparkle {
   position: absolute;
   top: -16px;
   right: -16px;
-}
-
-.stage-node__sparkle .material-symbols-outlined {
-  color: var(--secondary-container);
-  font-size: 1.75rem;
 }
 
 /* ---- Node: Label ---- */
@@ -875,10 +793,37 @@ img {
   left: var(--sm);
 }
 
-.question-card__sparkle .material-symbols-outlined {
-  color: var(--secondary-fixed-dim);
+.question-card__sparkle-icon {
   font-size: 2.5rem;
   opacity: 0.4;
+}
+
+/* ---- Equation text (always visible, unambiguous) ---- */
+.question-card__equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.question-card__num {
+  font-weight: 900;
+  font-size: 2.5rem;
+  color: var(--primary);
+  min-width: 48px;
+  text-align: center;
+}
+
+.question-card__num--unknown {
+  color: var(--outline-variant);
+}
+
+.question-card__op-text {
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--primary);
+  opacity: 0.6;
 }
 
 .question-card__content {
@@ -1039,11 +984,6 @@ img {
   box-shadow: var(--shadow-sm);
 }
 
-.answer-btn__badge .material-symbols-outlined {
-  font-size: 1rem;
-  color: var(--on-secondary-container);
-}
-
 .answer-grid__feedback {
   position: absolute;
   bottom: -48px;
@@ -1070,7 +1010,6 @@ img {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 80px;
 }
 
 .stage-page__content {
@@ -1125,10 +1064,6 @@ img {
 .juicy-button--primary:active {
   transform: translateY(4px);
   box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
-}
-
-.juicy-button--primary .material-symbols-outlined {
-  font-size: 2rem;
 }
 
 .juicy-button--secondary {
@@ -1208,11 +1143,6 @@ img {
   position: relative;
 }
 
-.completed-card__trophy-icon .material-symbols-outlined {
-  font-size: 10rem;
-  color: var(--secondary-fixed-dim);
-}
-
 .completed-card__sparkle {
   position: absolute;
   font-size: 1.5rem !important;
@@ -1289,16 +1219,6 @@ img {
 .completed-card__stat:last-child {
   background: var(--secondary-fixed);
   border-bottom-color: var(--secondary);
-}
-
-.completed-card__stat .material-symbols-outlined {
-  font-size: 2.5rem;
-  color: var(--primary);
-  margin-bottom: var(--xs);
-}
-
-.completed-card__stat:last-child .material-symbols-outlined {
-  color: var(--secondary);
 }
 
 .completed-card__stat-value {
@@ -1465,9 +1385,6 @@ img {
 .falling-stars__item {
   position: absolute;
   animation: float 6s ease-in-out infinite;
-}
-
-.falling-stars__item .material-symbols-outlined {
   font-size: 2rem;
   color: var(--secondary-fixed-dim);
   opacity: 0.5;
@@ -1526,10 +1443,6 @@ img {
     line-height: 2rem;
   }
 
-  .completed-card__trophy-icon .material-symbols-outlined {
-    font-size: 6rem;
-  }
-
   .stage-node__circle {
     width: 72px;
     height: 72px;
@@ -1548,17 +1461,6 @@ img {
     font-size: 1rem;
   }
 
-  .bottom-nav {
-    padding: 8px 4px;
-  }
-
-  .bottom-nav__tab {
-    padding: 4px 8px;
-  }
-
-  .bottom-nav__label {
-    font-size: 0.75rem;
-  }
 }
 
 @media (min-width: 768px) {

@@ -3,7 +3,6 @@ import { useProgress } from '../hooks/useProgress'
 import { STAGES } from '../data/stages'
 import { NodeState } from '../types'
 import TopBar from '../components/TopBar'
-import BottomNav from '../components/BottomNav'
 import StageNode from '../components/StageNode'
 import FallingStars from '../components/FallingStars'
 
@@ -89,8 +88,6 @@ export default function MapPage() {
           ))}
         </div>
       </main>
-
-      <BottomNav />
     </div>
   )
 }

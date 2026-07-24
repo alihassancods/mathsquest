@@ -9,7 +9,7 @@ export default function App() {
     <Suspense
       fallback={
         <div className="app-loading">
-          <span className="material-symbols-outlined animate-sparkle">auto_awesome</span>
+          <span className="app-loading__icon animate-sparkle">✨</span>
           <p>Loading...</p>
         </div>
       }
