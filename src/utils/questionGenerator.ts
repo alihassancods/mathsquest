@@ -1,5 +1,4 @@
 import { Question, StageDef, VisualTheme } from '../types'
-// ponytail: no named export needed — Question is re-exported from types
 
 const themes: VisualTheme[] = [
   'apples', 'bananas', 'strawberries', 'grapes', 'oranges',
@@ -30,15 +29,12 @@ export function generateQuestion(stage: StageDef): Question {
   const b = stage.addend
   const theme = themes[randInt(0, themes.length - 1)]
 
-  const emoji = themeEmoji[theme]
-
   return {
     a,
     b,
     answer: a + b,
     visualTheme: theme,
-    displayText: `${a} ${emoji} + ${b} ${emoji}`,
-    // For the visual display, we'll use the emoji repeated
+    displayText: `${a} + ${b}`,
   }
 }
 
@@ -50,22 +46,27 @@ export function getThemeLabel(theme: VisualTheme): string {
   return themeLabels[theme]
 }
 
-export function generateDistractors(correct: number, count: number = 3): number[] {
-  const distractors = new Set<number>()
-  distractors.add(correct)
+/**
+ * Generate answer options including the correct answer + unique distractors.
+ * Guarantees the correct answer is always in the returned array.
+ */
+export function generateOptions(correct: number, count: number = 4): number[] {
+  const options: number[] = [correct]
 
-  while (distractors.size < count + 1) {
+  while (options.length < count) {
     const offset = randInt(1, 5)
     const sign = Math.random() > 0.5 ? 1 : -1
     const candidate = Math.max(0, correct + sign * offset)
-    distractors.add(candidate)
+    if (!options.includes(candidate)) {
+      options.push(candidate)
+    }
   }
 
-  const shuffled = Array.from(distractors)
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = randInt(0, i)
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+  // Fisher-Yates shuffle
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = randInt(0, i);
+    [options[i], options[j]] = [options[j], options[i]]
   }
 
-  return shuffled.slice(0, count)
+  return options
 }

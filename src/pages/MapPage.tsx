@@ -14,7 +14,6 @@ export default function MapPage() {
   function getNodeState(stageId: number): NodeState {
     if (progress.completedStages.includes(stageId)) return 'completed'
     if (progress.unlockedStages.includes(stageId)) {
-      // If it's the current target (first unlocked), mark as current
       const sortedUnlocked = [...progress.unlockedStages].sort((a, b) => a - b)
       const current = sortedUnlocked[sortedUnlocked.length - 1]
       if (stageId === current && !progress.completedStages.includes(stageId)) return 'current'
@@ -30,7 +29,7 @@ export default function MapPage() {
     }
   }
 
-  // Arrange nodes in a zigzag pattern
+  // Alternating zigzag: even indices go left, odd go right
   const evenRow = (i: number) => i % 2 === 0
 
   return (
@@ -41,15 +40,19 @@ export default function MapPage() {
       <main className="map-container">
         {/* Floating clouds */}
         <div className="map-cloud map-cloud--1 animate-float" />
-        <div className="map-cloud map-cloud--2 animate-float" style={{ animationDelay: '-2s' }} />
+        <div className="map-cloud map-cloud--2 animate-float" style={{ animationDelay: '-1s' }} />
+        <div className="map-cloud map-cloud--3 animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="map-cloud map-cloud--4 animate-float" style={{ animationDelay: '-4.5s' }} />
 
-        {/* SVG path connecting nodes */}
-        <svg className="map-path" viewBox="0 0 800 3000" preserveAspectRatio="none">
-          <path
-            className="map-path__line"
-            d="M400 2900 C400 2900 650 2400 650 1900 C650 1400 150 900 150 400 C150 -100 400 -100 400 -100"
-          />
-        </svg>
+        {/* Decorative tree */}
+        <div className="map-tree map-tree--1">
+          <div className="map-tree__top" />
+          <div className="map-tree__trunk" />
+        </div>
+        <div className="map-tree map-tree--2">
+          <div className="map-tree__top" />
+          <div className="map-tree__trunk" />
+        </div>
 
         {/* Rolling hills */}
         <div className="rolling-hills">
@@ -63,16 +66,25 @@ export default function MapPage() {
 
         <div className="map-nodes">
           {STAGES.map((stage, i) => (
-            <div
-              key={stage.id}
-              className={`map-node-wrapper ${evenRow(i) ? 'map-node-wrapper--left' : 'map-node-wrapper--right'}`}
-            >
-              <StageNode
-                id={stage.id}
-                label={stage.label}
-                state={getNodeState(stage.id)}
-                onClick={() => handleNodeClick(stage.id)}
-              />
+            <div key={stage.id} className="map-path-node-group">
+              {/* Connecting line between nodes (except after last) */}
+              {i < STAGES.length - 1 && (
+                <div className={`map-connector map-connector--${evenRow(i) ? 'right' : 'left'}`}>
+                  <div className="map-connector__line" />
+                  <div className="map-connector__dot" />
+                </div>
+              )}
+
+              <div
+                className={`map-node-wrapper ${evenRow(i) ? 'map-node-wrapper--left' : 'map-node-wrapper--right'}`}
+              >
+                <StageNode
+                  id={stage.id}
+                  label={stage.label}
+                  state={getNodeState(stage.id)}
+                  onClick={() => handleNodeClick(stage.id)}
+                />
+              </div>
             </div>
           ))}
         </div>

@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { STAGES } from '../data/stages'
-import { generateQuestion, generateDistractors } from '../utils/questionGenerator'
+import { generateQuestion, generateOptions } from '../utils/questionGenerator'
 import { useProgress } from '../hooks/useProgress'
 import { Question } from '../types'
 import TopBar from '../components/TopBar'
@@ -11,11 +11,15 @@ import QuestionCard from '../components/QuestionCard'
 import AnswerGrid from '../components/AnswerGrid'
 
 const TOTAL_QUESTIONS = 10
+const XP_PER_CORRECT = 5
+const COINS_PER_CORRECT = 2
+const XP_BONUS_STAGE = 100
+const COINS_BONUS_STAGE = 50
 
 export default function StagePage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { progress, completeStage, recordAnswer } = useProgress()
+  const { progress, lastGain, completeStage, recordAnswer, clearLastGain } = useProgress()
 
   const stageId = Number(id)
   const stage = STAGES.find(s => s.id === stageId)
@@ -25,6 +29,10 @@ export default function StagePage() {
   const [revealed, setRevealed] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const [correctCount, setCorrectCount] = useState(0)
+  const [scorePopups, setScorePopups] = useState<{ id: number; xp: number; coins: number }[]>([])
+  const popupIdRef = useRef(0)
+  const [sessionXp, setSessionXp] = useState(0)
+  const [sessionCoins, setSessionCoins] = useState(0)
 
   const questions = useMemo<Question[]>(() => {
     if (!stage) return []
@@ -35,8 +43,20 @@ export default function StagePage() {
 
   const options = useMemo(() => {
     if (!currentQuestion) return []
-    return generateDistractors(currentQuestion.answer, 3)
+    return generateOptions(currentQuestion.answer, 4)
   }, [currentQuestion])
+
+  // Show score popup when lastGain changes
+  useEffect(() => {
+    if (lastGain && (lastGain.xp > 0 || lastGain.coins > 0)) {
+      const id = ++popupIdRef.current
+      setScorePopups(prev => [...prev, { id, ...lastGain }])
+      setTimeout(() => {
+        setScorePopups(prev => prev.filter(p => p.id !== id))
+      }, 1200)
+      clearLastGain()
+    }
+  }, [lastGain, clearLastGain])
 
   const handleSelect = useCallback((value: number) => {
     if (revealed || !currentQuestion) return
@@ -49,10 +69,14 @@ export default function StagePage() {
     recordAnswer(correct)
 
     if (correct) {
+      setSessionXp(prev => prev + XP_PER_CORRECT)
+      setSessionCoins(prev => prev + COINS_PER_CORRECT)
       setCorrectCount(prev => {
         const newCount = prev + 1
         if (newCount >= TOTAL_QUESTIONS) {
           completeStage(stageId)
+          setSessionXp(s => s + XP_BONUS_STAGE)
+          setSessionCoins(s => s + COINS_BONUS_STAGE)
         }
         return newCount
       })
@@ -61,7 +85,6 @@ export default function StagePage() {
 
   const handleNext = useCallback(() => {
     if (!isCorrect) {
-      // Wrong answer — retry same question
       setSelected(null)
       setRevealed(false)
       return
@@ -73,12 +96,22 @@ export default function StagePage() {
       setRevealed(false)
       setIsCorrect(false)
     } else {
-      // All done!
-      navigate('/completed', { state: { stageId, xp: 25, coins: 10 } })
+      navigate('/completed', {
+        state: {
+          stageId,
+          xp: sessionXp + XP_BONUS_STAGE,
+          coins: sessionCoins + COINS_BONUS_STAGE,
+          details: {
+            perQuestionXp: XP_PER_CORRECT * TOTAL_QUESTIONS,
+            bonusXp: XP_BONUS_STAGE,
+            perQuestionCoins: COINS_PER_CORRECT * TOTAL_QUESTIONS,
+            bonusCoins: COINS_BONUS_STAGE,
+          },
+        },
+      })
     }
-  }, [currentIndex, isCorrect, navigate, stageId])
+  }, [currentIndex, isCorrect, navigate, stageId, sessionXp, sessionCoins])
 
-  // Handle retry on wrong answer
   const handleRetry = useCallback(() => {
     setSelected(null)
     setRevealed(false)
@@ -106,6 +139,29 @@ export default function StagePage() {
       <TopBar progress={progress} />
 
       <main className="stage-page__content">
+        {/* Score popups (floating +XP / +Coins) */}
+        <div className="score-popups">
+          {scorePopups.map(p => (
+            <div key={p.id} className="score-popup">
+              {p.xp > 0 && <span className="score-popup--xp">+{p.xp} XP</span>}
+              {p.coins > 0 && <span className="score-popup--coins">+{p.coins} 🪙</span>}
+            </div>
+          ))}
+        </div>
+
+        {/* Live score card */}
+        <div className="live-score">
+          <span>⭐ <strong>{sessionXp}</strong> XP</span>
+          <span className="live-score__divider">|</span>
+          <span>🪙 <strong>{sessionCoins}</strong></span>
+          {progress.bestStreak > 0 && (
+            <>
+              <span className="live-score__divider">|</span>
+              <span>🔥 <strong>{Math.min(progress.bestStreak, correctCount)}</strong></span>
+            </>
+          )}
+        </div>
+
         <ProgressBar current={revealed && isCorrect ? currentIndex + 1 : currentIndex} total={TOTAL_QUESTIONS} />
 
         <QuestionCard question={currentQuestion} />
