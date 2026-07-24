@@ -92,6 +92,14 @@ export function useProgress() {
 
   const clearLastGain = useCallback(() => setLastGain(null), [])
 
+  const setProfile = useCallback((name: string, gender: 'boy' | 'girl' | 'neutral') => {
+    setProgress(prev => ({
+      ...prev,
+      userName: name,
+      userGender: gender,
+    }))
+  }, [])
+
   return {
     progress,
     lastGain,
@@ -101,5 +109,6 @@ export function useProgress() {
     addXp,
     resetProgress,
     clearLastGain,
+    setProfile,
   }
 }

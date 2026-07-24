@@ -32,6 +32,8 @@ export interface ProgressData {
   accuracy: number
   totalQuestionsAnswered: number
   totalCorrect: number
+  userName?: string
+  userGender?: 'boy' | 'girl' | 'neutral'
 }
 
 export type NodeState = 'locked' | 'unlocked' | 'completed' | 'current'

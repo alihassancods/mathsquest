@@ -38,6 +38,43 @@ export function generateQuestion(stage: StageDef): Question {
   }
 }
 
+export function generateStageQuestions(stage: StageDef, count: number): Question[] {
+  const questions: Question[] = []
+  const usedA = new Set<number>()
+
+  const rangeSize = stage.rangeMax - stage.rangeMin + 1
+  const actualCount = Math.min(count, rangeSize)
+
+  while (questions.length < actualCount) {
+    const a = randInt(stage.rangeMin, stage.rangeMax)
+    if (!usedA.has(a)) {
+      usedA.add(a)
+      const theme = themes[randInt(0, themes.length - 1)]
+      questions.push({
+        a,
+        b: stage.addend,
+        answer: a + stage.addend,
+        visualTheme: theme,
+        displayText: `${a} + ${stage.addend}`,
+      })
+    }
+  }
+
+  while (questions.length < count) {
+    const a = randInt(stage.rangeMin, stage.rangeMax)
+    const theme = themes[randInt(0, themes.length - 1)]
+    questions.push({
+      a,
+      b: stage.addend,
+      answer: a + stage.addend,
+      visualTheme: theme,
+      displayText: `${a} + ${stage.addend}`,
+    })
+  }
+
+  return questions
+}
+
 export function getThemeEmoji(theme: VisualTheme): string {
   return themeEmoji[theme]
 }

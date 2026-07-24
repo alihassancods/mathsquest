@@ -10,6 +10,9 @@ export default function TopBar({ progress }: TopBarProps) {
       <div className="top-bar__inner">
         <div className="top-bar__brand">
           <span className="top-bar__logo">MathQuest</span>
+          {progress.userName && (
+            <span className="top-bar__welcome">Hi, {progress.userName}! 🎒</span>
+          )}
         </div>
         <div className="top-bar__stats">
           <div className="stat-chip stat-chip--xp">

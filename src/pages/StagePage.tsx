@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { STAGES } from '../data/stages'
-import { generateQuestion, generateOptions } from '../utils/questionGenerator'
+import { generateStageQuestions, generateOptions } from '../utils/questionGenerator'
 import { useProgress } from '../hooks/useProgress'
 import { Question } from '../types'
 import TopBar from '../components/TopBar'
@@ -23,6 +23,8 @@ export default function StagePage() {
   const stageId = Number(id)
   const stage = STAGES.find(s => s.id === stageId)
 
+  const isUnlocked = progress.unlockedStages.includes(stageId)
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [revealed, setRevealed] = useState(false)
@@ -34,9 +36,9 @@ export default function StagePage() {
   const [sessionCoins, setSessionCoins] = useState(0)
 
   const questions = useMemo<Question[]>(() => {
-    if (!stage) return []
-    return Array.from({ length: TOTAL_QUESTIONS }, () => generateQuestion(stage))
-  }, [stage])
+    if (!stage || !isUnlocked) return []
+    return generateStageQuestions(stage, TOTAL_QUESTIONS)
+  }, [stage, isUnlocked])
 
   const currentQuestion = questions[currentIndex]
 
@@ -117,12 +119,52 @@ export default function StagePage() {
     setIsCorrect(false)
   }, [])
 
-  if (!stage || !currentQuestion) {
+  if (!stage) {
     return (
       <div className="stage-page">
         <TopBar progress={progress} />
         <main className="stage-page__error">
           <p>Stage not found</p>
+          <button onClick={() => navigate('/')} className="juicy-button--primary">
+            Back to Map
+          </button>
+        </main>
+      </div>
+    )
+  }
+
+  if (!isUnlocked) {
+    return (
+      <div className="stage-page stage-page--locked">
+        <TopBar progress={progress} />
+        <main className="stage-page__locked">
+          <div className="locked-card card-3d">
+            <div className="locked-card__header">
+              <span className="locked-card__lock-emoji animate-bounce-juicy">🔒</span>
+              <h2 className="locked-card__title">Stage Locked!</h2>
+            </div>
+            <div className="locked-card__body">
+              <p className="locked-card__text">
+                Oops! Stage <strong>{stageId} ({stage.label})</strong> is currently locked. Complete the previous stages on the map to unlock this math adventure!
+              </p>
+            </div>
+            <div className="locked-card__actions">
+              <button onClick={() => navigate('/')} className="juicy-button--primary">
+                🗺️ Back to Map
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!currentQuestion) {
+    return (
+      <div className="stage-page">
+        <TopBar progress={progress} />
+        <main className="stage-page__error">
+          <p>Error generating questions.</p>
           <button onClick={() => navigate('/')} className="juicy-button--primary">
             Back to Map
           </button>
@@ -163,7 +205,7 @@ export default function StagePage() {
 
         <ProgressBar current={revealed && isCorrect ? currentIndex + 1 : currentIndex} total={TOTAL_QUESTIONS} />
 
-        <QuestionCard question={currentQuestion} />
+        <QuestionCard question={currentQuestion} stageId={stageId} />
 
         <AnswerGrid
           options={options}

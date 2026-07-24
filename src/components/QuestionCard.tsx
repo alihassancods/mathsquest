@@ -1,14 +1,17 @@
 import { Question } from '../types'
 import { getThemeEmoji } from '../utils/questionGenerator'
+import { generateQuestionStory } from '../utils/storyGenerator'
 
 interface QuestionCardProps {
   question: Question
+  stageId: number
 }
 
-export default function QuestionCard({ question }: QuestionCardProps) {
+export default function QuestionCard({ question, stageId }: QuestionCardProps) {
   const emoji = getThemeEmoji(question.visualTheme)
+  const storyText = generateQuestionStory(question, stageId)
 
-  // Build visual groups: repeat emoji up to 8 times max
+  // Build visual groups for stage <= 2: repeat emoji up to 8 times max
   const groupA = Array.from({ length: Math.min(question.a, 8) }, (_, i) => (
     <span key={`a-${i}`} className="question-emoji" style={{ animationDelay: `${i * 0.1}s` }}>
       {emoji}
@@ -27,7 +30,12 @@ export default function QuestionCard({ question }: QuestionCardProps) {
       </div>
 
       <div className="question-card__content">
-        {/* Explicit equation text — always visible, unambiguous */}
+        {/* Story Box at the top */}
+        <div className="question-card__story-box animate-float">
+          <p className="question-card__story-text">{storyText}</p>
+        </div>
+
+        {/* Explicit equation text */}
         <div className="question-card__equation">
           <span className="question-card__num">{question.a}</span>
           <span className="question-card__op-text">+</span>
@@ -36,16 +44,44 @@ export default function QuestionCard({ question }: QuestionCardProps) {
           <span className="question-card__num question-card__num--unknown">?</span>
         </div>
 
-        {/* Visual emoji groups */}
-        <div className="question-card__groups">
-          <div className="question-card__group">{groupA}</div>
-          <span className="question-card__op">+</span>
-          <div className="question-card__group">{groupB}</div>
-          <span className="question-card__op">=</span>
-          <div className="question-card__answer-box">
-            <span className="question-card__answer-q">?</span>
+        {/* Adaptive visual representation */}
+        {stageId <= 2 ? (
+          <div className="question-card__groups">
+            <div className="question-card__group">{groupA}</div>
+            <span className="question-card__op">+</span>
+            <div className="question-card__group">{groupB}</div>
+            <span className="question-card__op">=</span>
+            <div className="question-card__answer-box">
+              <span className="question-card__answer-q">?</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="question-card__groups question-card__groups--cartoon">
+            <div className="question-card__cartoon-operand animate-float">
+              <span className="question-card__cartoon-number">{question.a}</span>
+              <div className="question-card__cartoon-mascot">
+                <img src="/doraemon_mascot.jpg" alt="Doraemon" className="mascot-image-small animate-bounce-juicy" />
+                <span className="mascot-badge">{emoji}</span>
+              </div>
+            </div>
+
+            <span className="question-card__op">+</span>
+
+            <div className="question-card__cartoon-operand animate-float" style={{ animationDelay: '-1.5s' }}>
+              <span className="question-card__cartoon-number">{question.b}</span>
+              <div className="question-card__cartoon-mascot">
+                <img src="/doraemon_mascot.jpg" alt="Doraemon" className="mascot-image-small animate-bounce-juicy" style={{ animationDelay: '-1.5s' }} />
+                <span className="mascot-badge">{emoji}</span>
+              </div>
+            </div>
+
+            <span className="question-card__op">=</span>
+
+            <div className="question-card__answer-box question-card__answer-box--cartoon">
+              <span className="question-card__answer-q">?</span>
+            </div>
+          </div>
+        )}
 
         <p className="question-card__text">
           How many in total?

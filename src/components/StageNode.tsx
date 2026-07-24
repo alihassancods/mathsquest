@@ -5,23 +5,30 @@ interface StageNodeProps {
   label: string
   state: NodeState
   onClick: () => void
+  wobble?: boolean
+  avatarUrl?: string
 }
 
-export default function StageNode({ id, label, state, onClick }: StageNodeProps) {
+export default function StageNode({ id, label, state, onClick, wobble, avatarUrl }: StageNodeProps) {
   const stateClass = `stage-node--${state}`
 
   return (
-    <div className={`stage-node ${stateClass}`}>
+    <div className={`stage-node ${stateClass} ${wobble ? 'animate-wobble' : ''}`}>
       {state === 'current' && (
-        <div className="stage-node__avatar">
-          <div className="stage-node__avatar-icon">🧑</div>
-          <div className="stage-node__you-badge">You</div>
+        <div className="stage-node__avatar animate-float">
+          <div className="stage-node__avatar-icon">
+            <img
+              src={avatarUrl || '/boy_explorer_mascot.jpg'}
+              alt="You"
+              className="stage-node__avatar-img"
+            />
+          </div>
+          <div className="stage-node__you-badge">YOU 🚩</div>
         </div>
       )}
 
       <button
         onClick={onClick}
-        disabled={state === 'locked'}
         className={`stage-node__circle ${state === 'current' ? 'node-active' : ''} ${state !== 'locked' ? 'juicy-button-press' : ''}`}
       >
         {state === 'locked' ? (
