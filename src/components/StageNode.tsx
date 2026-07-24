@@ -5,29 +5,34 @@ interface StageNodeProps {
   label: string
   state: NodeState
   onClick: () => void
+  wobble?: boolean
+  avatarUrl?: string
 }
 
-export default function StageNode({ id, label, state, onClick }: StageNodeProps) {
+export default function StageNode({ id, label, state, onClick, wobble, avatarUrl }: StageNodeProps) {
   const stateClass = `stage-node--${state}`
 
   return (
-    <div className={`stage-node ${stateClass}`}>
+    <div className={`stage-node ${stateClass} ${wobble ? 'animate-wobble' : ''}`}>
       {state === 'current' && (
-        <div className="stage-node__avatar">
+        <div className="stage-node__avatar animate-float">
           <div className="stage-node__avatar-icon">
-            <span className="material-symbols-outlined">face</span>
+            <img
+              src={avatarUrl || '/boy_explorer_mascot.jpg'}
+              alt="You"
+              className="stage-node__avatar-img"
+            />
           </div>
-          <div className="stage-node__you-badge">You</div>
+          <div className="stage-node__you-badge">YOU 🚩</div>
         </div>
       )}
 
       <button
         onClick={onClick}
-        disabled={state === 'locked'}
         className={`stage-node__circle ${state === 'current' ? 'node-active' : ''} ${state !== 'locked' ? 'juicy-button-press' : ''}`}
       >
         {state === 'locked' ? (
-          <span className="material-symbols-outlined">lock</span>
+          <span className="stage-node__lock-emoji">🔒</span>
         ) : (
           <span className="stage-node__number">{id}</span>
         )}
@@ -35,19 +40,29 @@ export default function StageNode({ id, label, state, onClick }: StageNodeProps)
         {state === 'completed' && (
           <>
             <div className="stage-node__stars">
-              <span className="material-symbols-outlined star star--1">star</span>
-              <span className="material-symbols-outlined star star--2">star</span>
-              <span className="material-symbols-outlined star star--3">star</span>
+              <span className="stage-node__star stage-node__star--1">⭐</span>
+              <span className="stage-node__star stage-node__star--2">⭐</span>
+              <span className="stage-node__star stage-node__star--3">⭐</span>
             </div>
             <div className="stage-node__check">
-              <span className="material-symbols-outlined">check</span>
+              <svg viewBox="0 0 24 24" width="20" height="20" className="stage-node__check-svg">
+                <path
+                  d="M3 12l6 6 12-12"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="stage-node__check-path"
+                />
+              </svg>
             </div>
           </>
         )}
 
         {state === 'current' && (
           <div className="stage-node__sparkle">
-            <span className="material-symbols-outlined animate-sparkle">auto_awesome</span>
+            <span className="stage-node__sparkle-emoji animate-sparkle">✨</span>
           </div>
         )}
       </button>

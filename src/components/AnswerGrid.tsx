@@ -33,34 +33,38 @@ export default function AnswerGrid({
 
         let btnClass = 'answer-btn'
         if (showCorrect) btnClass += ' answer-btn--correct'
-        else if (showWrong) btnClass += ' answer-btn--wrong'
+        else if (showWrong) btnClass += ' answer-btn--wrong answer-btn--shake'
         else if (isSelected) btnClass += ' answer-btn--selected'
+
+        // If wrong was picked, also highlight correct so child sees the right answer
+        if (revealed && isCorrect && selected !== correct) {
+          btnClass += ' answer-btn--reveal-correct'
+        }
 
         return (
           <button
             key={opt}
             onClick={() => onSelect(opt)}
-            disabled={disabled || revealed}
+            disabled={disabled || (revealed && selected !== null)}
             className={btnClass}
           >
             <span className="answer-btn__value">{opt}</span>
             {showCorrect && (
               <div className="answer-btn__badge animate-sparkle">
-                <span className="material-symbols-outlined">star</span>
+                <span className="answer-btn__star">⭐</span>
               </div>
             )}
           </button>
         )
       })}
 
-      {revealed && selected === correct && (
-        <div className="answer-grid__feedback answer-grid__feedback--correct">
-          {encouragement}
-        </div>
-      )}
-      {revealed && selected !== null && selected !== correct && (
-        <div className="answer-grid__feedback answer-grid__feedback--wrong">
-          Almost! Try again 😊
+      {revealed && selected !== null && (
+        <div className={`answer-grid__banner ${selected === correct ? 'answer-grid__banner--correct' : 'answer-grid__banner--wrong'}`}>
+          {selected === correct ? (
+            <>{encouragement}</>
+          ) : (
+            <><span className="answer-grid__banner-shake">✖</span> Almost! Try again 😊</>
+          )}
         </div>
       )}
     </div>
